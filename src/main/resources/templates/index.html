@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AES File Encryption</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <header class="header">
+        <h1><span class="icon">🔒</span> Mã hóa/Giải mã file AES</h1>
+      </header>
+
+      <main class="main-content">
+        <!-- Phần tạo khóa -->
+        <section class="key-section">
+          <form action="/generateKey" method="post" class="key-form">
+            <div class="key-options">
+              <label>Chọn độ dài khóa:</label>
+              <div class="radio-group">
+                <label>
+                  <input
+                    type="radio"
+                    name="keySize"
+                    value="16"
+                    th:checked="${keySize == 16}"
+                  />
+                  128-bit (16 ký tự)
+                </label>
+                <label>
+                  <input
+                    type="radio"
+                    name="keySize"
+                    value="24"
+                    th:checked="${keySize == 24}"
+                  />
+                  192-bit (24 ký tự)
+                </label>
+                <label>
+                  <input
+                    type="radio"
+                    name="keySize"
+                    value="32"
+                    th:checked="${keySize == 32}"
+                  />
+                  256-bit (32 ký tự)
+                </label>
+              </div>
+            </div>
+            <button type="submit" class="btn generate-btn">
+              <span class="btn-icon">🔑</span> Tạo Khóa Ngẫu Nhiên
+            </button>
+          </form>
+
+          <form action="/setKey" method="post" class="custom-key-form">
+            <label>Hoặc nhập khóa tùy chỉnh:</label>
+            <div class="custom-key-input">
+              <input
+                type="text"
+                name="customKey"
+                placeholder="Nhập khóa (16, 24 hoặc 32 ký tự)"
+                th:value="${key}"
+                required
+              />
+              <button type="submit" class="btn set-key-btn">
+                <span class="btn-icon">✏️</span> Đặt Khóa
+              </button>
+            </div>
+          </form>
+
+          <div class="key-display">
+            <label>Khóa hiện tại:</label>
+            <div class="key-value" th:text="${key ?: 'Chưa có khóa'}"></div>
+            <div class="key-info" th:if="${key}">
+              Độ dài: <span th:text="${key.length()}"></span> ký tự (<span
+                th:text="${key.length() == 16 ? '128-bit' : (key.length() == 24 ? '192-bit' : '256-bit')}"
+              ></span
+              >)
+            </div>
+          </div>
+        </section>
+
+        <!-- Thông báo -->
+        <div th:if="${message}" class="alert success">
+          <span class="alert-icon">✓</span>
+          <span th:text="${message}"></span>
+        </div>
+        <div th:if="${error}" class="alert error">
+          <span class="alert-icon">⚠</span>
+          <span th:text="${error}"></span>
+        </div>
+
+        <!-- Phần mã hóa -->
+        <section class="action-card">
+          <h2><span class="icon">🛡️</span> Mã hóa file</h2>
+          <form
+            action="/encrypt"
+            method="post"
+            enctype="multipart/form-data"
+            class="upload-form"
+          >
+            <div class="file-input-wrapper">
+              <label for="encryptFile" class="file-label">
+                <span class="file-icon">📁</span>
+                <span class="file-text">Chọn file cần mã hóa</span>
+              </label>
+              <input type="file" name="file" id="encryptFile" required />
+            </div>
+            <button type="submit" class="btn encrypt-btn">
+              <span class="btn-icon">🔒</span> Mã hóa File
+            </button>
+          </form>
+        </section>
+
+        <!-- Phần giải mã -->
+        <section class="action-card">
+          <h2><span class="icon">🔓</span> Giải mã file</h2>
+          <form
+            action="/decrypt"
+            method="post"
+            enctype="multipart/form-data"
+            class="upload-form"
+          >
+            <div class="file-input-wrapper">
+              <label for="decryptFile" class="file-label">
+                <span class="file-icon">📁</span>
+                <span class="file-text">Chọn file cần giải mã</span>
+              </label>
+              <input type="file" name="file" id="decryptFile" required />
+            </div>
+            <button type="submit" class="btn decrypt-btn">
+              <span class="btn-icon">🔓</span> Giải mã File
+            </button>
+          </form>
+        </section>
+      </main>
+
+      <footer class="footer">
+        <p>Ứng dụng mã hóa AES - Phiên bản 1.0</p>
+      </footer>
+    </div>
+  </body>
+</html>
